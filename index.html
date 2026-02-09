@@ -47,13 +47,13 @@
               radial-gradient(900px 700px at 85% 25%, rgba(255,255,255,0.06), transparent 60%),
               radial-gradient(1000px 700px at 50% 100%, rgba(255,255,255,0.05), transparent 58%),
               linear-gradient(180deg, var(--bg0), var(--bg1));
-      display:flex;
-      align-items:center;
-      justify-content:center;
       padding: 18px;
-      overflow-x:hidden;
+      
+      display: block;
+      overflow-x: hidden;
     }
-    
+
+
     body:before{
       content:"";
       position:fixed;
@@ -66,6 +66,7 @@
 
     .app{
       width: min(1020px, 100%);
+      margin: 18px auto;
       border-radius: var(--radius2);
       border: 1px solid rgba(255,255,255,0.10);
       background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03));
