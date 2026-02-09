@@ -638,7 +638,7 @@
       row.className = "word-row" + (w.unlocked ? "" : " locked");
       row.innerHTML = `
           <div class="w">${w.unlocked ? w.key : "••••••"}</div>
-          <div class="badge">${w.unlocked ? "bound" : "locked"}</div>
+          <div class="badge">${w.unlocked ? "unlocked" : "locked"}</div>
         `;
       journalMini.appendChild(row);
     }
@@ -655,7 +655,7 @@
   function renderJournalModal(){
     const entries = state.words.map(w => {
       const shown = w.unlocked ? w.key : "••••••";
-      const st = w.unlocked ? "bound" : "locked";
+      const st = w.unlocked ? "unlocked" : "locked";
       return `
           <div class="bigword">
             <div class="left">${shown}</div>
@@ -1045,8 +1045,8 @@ What remains is what you’ve gathered.
     <div class="divider"></div>
 
     <div class="muted" style="margin:0;">
-The last page is sealed.
-One word remains, meant for a single name.
+The last word is sealed.
+One word remains.
     </div>
 
     <div class="callout">
