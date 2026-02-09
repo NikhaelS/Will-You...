@@ -1,0 +1,971 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wyrdbound Journal</title>
+  <style>
+    :root{
+      --bg: #0b0b10;
+      --panel: rgba(255,255,255,0.06);
+      --panel2: rgba(255,255,255,0.09);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.72);
+      --muted2: rgba(255,255,255,0.55);
+      --accent: rgba(255,255,255,0.92);
+      --danger: rgba(255,140,140,0.92);
+      --ok: rgba(170,255,210,0.92);
+      --shadow: 0 12px 40px rgba(0,0,0,0.55);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family: ui-serif, Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(1200px 700px at 20% 15%, rgba(255,255,255,0.08), transparent 55%),
+        radial-gradient(900px 650px at 80% 30%, rgba(255,255,255,0.05), transparent 60%),
+        radial-gradient(700px 600px at 50% 90%, rgba(255,255,255,0.06), transparent 55%),
+        var(--bg);
+      color: var(--text);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+    }
+
+    .app{
+      width: min(940px, 100%);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,0.10);
+      overflow:hidden;
+    }
+
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding: 16px 18px;
+      background: rgba(0,0,0,0.25);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      gap: 12px;
+    }
+
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .title h1{
+      margin:0;
+      font-size: 18px;
+      letter-spacing: 0.6px;
+      font-weight: 650;
+    }
+    .title .sub{
+      font-size: 12px;
+      color: var(--muted2);
+      letter-spacing: 0.3px;
+    }
+
+    .hdr-actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    button, .btn{
+      font-family: inherit;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 12px;
+      cursor:pointer;
+      transition: transform 0.08s ease, background 0.2s ease, border 0.2s ease;
+      user-select:none;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    button:hover, .btn:hover{ background: rgba(255,255,255,0.10); }
+    button:active{ transform: translateY(1px); }
+    button[disabled]{ opacity:0.45; cursor:not-allowed; }
+
+    .ghost{ background: transparent; }
+    .danger{ border-color: rgba(255,140,140,0.35); }
+    .small{ padding: 8px 10px; border-radius: 12px; font-size: 13px; }
+
+    main{
+      display:grid;
+      grid-template-columns: 1fr 320px;
+      gap: 0;
+      min-height: 560px;
+    }
+
+    @media (max-width: 860px){
+      main{ grid-template-columns: 1fr; }
+      .side{ order: -1; }
+    }
+
+    .stage{
+      padding: 18px;
+    }
+
+    .card{
+      background: var(--panel);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+
+    .scene-title{
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      letter-spacing: 0.4px;
+      font-weight: 650;
+    }
+
+    .scene-text{
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 15px;
+      margin: 10px 0;
+      white-space: pre-line;
+    }
+
+    .divider{
+      height: 1px;
+      background: rgba(255,255,255,0.10);
+      margin: 14px 0;
+    }
+
+    .input-row{
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top: 10px;
+    }
+
+    input[type="text"]{
+      flex: 1;
+      min-width: 220px;
+      padding: 11px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.16);
+      outline:none;
+      background: rgba(0,0,0,0.20);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 15px;
+    }
+
+    .msg{
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    .msg.ok{ color: var(--ok); }
+    .msg.err{ color: var(--danger); }
+
+    .choices{
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .choice{
+      text-align:left;
+      width:100%;
+      justify-content:flex-start;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .hint{
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--muted2);
+      display:none;
+    }
+    .hint.show{ display:block; }
+
+    .side{
+      padding: 18px;
+      border-left: 1px solid rgba(255,255,255,0.08);
+      background: rgba(0,0,0,0.12);
+    }
+
+    .journal{
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+    }
+
+    .pill{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05);
+      font-size: 14px;
+      letter-spacing: 0.4px;
+    }
+    .pill.locked{
+      opacity: 0.55;
+      background: rgba(255,255,255,0.03);
+    }
+    .pill .tag{
+      font-size: 12px;
+      color: var(--muted2);
+      letter-spacing: 0.2px;
+    }
+
+    .progress{
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--muted2);
+      line-height: 1.35;
+    }
+
+    .modal{
+      position: fixed;
+      inset: 0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(6px);
+      z-index: 50;
+    }
+    .modal.show{ display:flex; }
+
+    .modal .panel{
+      width: min(760px, 100%);
+      border-radius: var(--radius);
+      background: rgba(15,15,22,0.96);
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .modal .panel header{
+      background: rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+    }
+
+    .modal .body{
+      padding: 16px 18px 18px;
+    }
+
+    .journal-big{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .bigword{
+      padding: 14px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.05);
+      font-size: 16px;
+      letter-spacing: 0.9px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .bigword .state{
+      font-size: 12px;
+      color: var(--muted2);
+      letter-spacing: 0.2px;
+    }
+
+    .final-options{
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .footer-note{
+      margin-top: 12px;
+      color: var(--muted2);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header>
+      <div class="title">
+        <h1>Wyrdbound Journal</h1>
+        <div class="sub">A tale bound by choice, presence, and a question held with care.</div>
+      </div>
+      <div class="hdr-actions">
+        <button class="small ghost" id="btnJournal">📖 Journal</button>
+        <button class="small ghost danger" id="btnReset">Reset</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="stage">
+        <div class="card" id="sceneCard"></div>
+      </section>
+
+      <aside class="side">
+        <div class="card">
+          <div class="scene-title">Journal</div>
+          <div class="journal" id="journalMini"></div>
+          <div class="progress" id="progressText"></div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Journal modal -->
+  <div class="modal" id="journalModal" role="dialog" aria-modal="true" aria-label="Journal">
+    <div class="panel">
+      <header>
+        <div class="title">
+          <h1>Journal</h1>
+          <div class="sub">What you have gathered remains. Quietly. Surely.</div>
+        </div>
+        <div class="hdr-actions">
+          <button class="small ghost" id="btnCloseJournal">Close</button>
+        </div>
+      </header>
+      <div class="body" id="journalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    // ======================
+    // State + persistence
+    // ======================
+    const STORAGE_KEY = "wyrdbound_journal_v1";
+
+    const WORDS = [
+      { key: "WILL", unlocked: false },
+      { key: "YOU", unlocked: false },
+      { key: "BE", unlocked: false },
+      { key: "MY", unlocked: false },
+      { key: "VALENTINE?", unlocked: false },
+    ];
+
+    const defaultState = () => ({
+      step: "start",
+      level: 0, // 0..4 (levels), 5 = final complete
+      attempts: { l1: 0, l2: 0 },
+      removedWords: [], // for level 4
+      finalClosedOnce: false,
+      words: WORDS.map(w => ({...w})),
+      endMessage: "Some answers are not meant for screens.\nI’m waiting for you."
+    });
+
+    let state = loadState();
+
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return defaultState();
+        const parsed = JSON.parse(raw);
+        // basic migration safety
+        if(!parsed.words || !Array.isArray(parsed.words)) return defaultState();
+        return { ...defaultState(), ...parsed };
+      }catch{
+        return defaultState();
+      }
+    }
+
+    function saveState(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function resetState(){
+      state = defaultState();
+      saveState();
+      render();
+    }
+
+    function unlockWord(wordKey){
+      const w = state.words.find(x => x.key === wordKey);
+      if(w) w.unlocked = true;
+      saveState();
+      renderMiniJournal();
+    }
+
+    function allUnlockedBeforeFinal(){
+      return ["WILL","YOU","BE","MY"].every(k => state.words.find(w => w.key===k)?.unlocked);
+    }
+
+    // ======================
+    // UI helpers
+    // ======================
+    const sceneCard = document.getElementById("sceneCard");
+    const journalMini = document.getElementById("journalMini");
+    const progressText = document.getElementById("progressText");
+
+    const journalModal = document.getElementById("journalModal");
+    const journalBody = document.getElementById("journalBody");
+
+    document.getElementById("btnReset").addEventListener("click", () => {
+      if(confirm("Reset progress? This will clear the journal and restart the story.")){
+        resetState();
+      }
+    });
+
+    document.getElementById("btnJournal").addEventListener("click", () => openJournal());
+    document.getElementById("btnCloseJournal").addEventListener("click", () => closeJournal());
+    journalModal.addEventListener("click", (e) => {
+      if(e.target === journalModal) closeJournal();
+    });
+
+    function openJournal(){
+      renderJournalModal();
+      journalModal.classList.add("show");
+    }
+    function closeJournal(){
+      journalModal.classList.remove("show");
+    }
+
+    function renderMiniJournal(){
+      journalMini.innerHTML = "";
+      state.words.forEach(w => {
+        const div = document.createElement("div");
+        div.className = "pill" + (w.unlocked ? "" : " locked");
+        div.innerHTML = `
+          <span>${w.unlocked ? w.key : "••••••"}</span>
+          <span class="tag">${w.unlocked ? "bound" : "locked"}</span>
+        `;
+        journalMini.appendChild(div);
+      });
+
+      const unlockedCount = state.words.filter(w => w.unlocked).length;
+      progressText.textContent =
+        unlockedCount < 4
+          ? `Words gathered: ${unlockedCount}/5.\nYour steps are saved automatically.`
+          : unlockedCount === 4
+            ? `Words gathered: 4/5.\nOne page remains.`
+            : `Words gathered: 5/5.\nThe journal remembers.`;
+    }
+
+    function renderJournalModal(){
+      const unlocked = k => state.words.find(w => w.key === k)?.unlocked;
+
+      const entries = state.words.map(w => {
+        const stateTxt = w.unlocked ? "bound" : "locked";
+        const shown = w.unlocked ? w.key : "••••••";
+        return `<div class="bigword"><span>${shown}</span><span class="state">${stateTxt}</span></div>`;
+      }).join("");
+
+      let extra = "";
+      // Final level overlay only when Valentine? unlocked
+      if(unlocked("VALENTINE?")){
+        extra = `
+          <div class="divider"></div>
+          <div class="scene-text" style="margin:0;">
+            The words are already written.\nOnly one thing remains.
+          </div>
+          <div class="final-options">
+            <button class="choice" id="finalStep">🌸 Step forward</button>
+            <button class="choice" id="finalClose">🌙 Close the journal</button>
+          </div>
+          <div class="footer-note">
+            This story will not force your answer. It only makes space for it.
+          </div>
+        `;
+      }
+
+      journalBody.innerHTML = `
+        <div class="scene-text" style="margin:0;">
+          What you have gathered remains.\nQuietly. Surely.
+        </div>
+        <div class="journal-big">${entries}</div>
+        ${extra}
+      `;
+
+      if(unlocked("VALENTINE?")){
+        const finalStep = document.getElementById("finalStep");
+        const finalClose = document.getElementById("finalClose");
+
+        finalClose.addEventListener("click", () => {
+          state.finalClosedOnce = true;
+          saveState();
+          // gentle reassurance, keep journal open
+          journalBody.insertAdjacentHTML("beforeend", `
+            <div class="divider"></div>
+            <div class="scene-text" style="margin:0;">
+              Some answers need time.\nThere is no rush.
+            </div>
+          `);
+          finalClose.disabled = true;
+          setTimeout(() => { renderJournalModal(); }, 700);
+        });
+
+        finalStep.addEventListener("click", () => {
+          closeJournal();
+          state.step = "end";
+          saveState();
+          render();
+        });
+      }
+    }
+
+    function normalize(s){
+      return (s || "").trim().toUpperCase().replace(/\s+/g, " ");
+    }
+
+    // ======================
+    // Scene rendering
+    // ======================
+    function render(){
+      renderMiniJournal();
+
+      switch(state.step){
+        case "start": return renderStart();
+        case "l1": return renderLevel1();
+        case "l2": return renderLevel2();
+        case "l3": return renderLevel3();
+        case "l4": return renderLevel4();
+        case "final": return renderFinalLevel();
+        case "end": return renderEnd();
+        default:
+          state.step = "start"; saveState(); return renderStart();
+      }
+    }
+
+    function renderStart(){
+      sceneCard.innerHTML = `
+        <div class="scene-title">Begin</div>
+        <div class="scene-text">
+A tale bound by choice, presence, and a question held with care.
+
+You will gather five words.
+Your progress saves automatically on this device.
+        </div>
+        <div class="divider"></div>
+        <div class="input-row">
+          <button id="btnBegin">▶ Begin</button>
+          <button class="ghost" id="btnResume" ${state.level === 0 && !state.words[0].unlocked ? "disabled" : ""}>Continue</button>
+        </div>
+        <div class="footer-note">
+          Tip: use the Journal button anytime. If you ever reset, the story will start anew.
+        </div>
+      `;
+
+      document.getElementById("btnBegin").addEventListener("click", () => {
+        state.step = "l1";
+        state.level = 0;
+        saveState();
+        render();
+      });
+
+      const btnResume = document.getElementById("btnResume");
+      btnResume.addEventListener("click", () => {
+        // resume to next incomplete level
+        const next = nextStepFromProgress();
+        state.step = next;
+        saveState();
+        render();
+      });
+    }
+
+    function nextStepFromProgress(){
+      const has = k => state.words.find(w => w.key===k)?.unlocked;
+      if(!has("WILL")) return "l1";
+      if(!has("YOU")) return "l2";
+      if(!has("BE")) return "l3";
+      if(!has("MY")) return "l4";
+      if(!has("VALENTINE?")) return "final";
+      return "end";
+    }
+
+    // ----------------------
+    // Level 1: WILL
+    // ----------------------
+    function renderLevel1(){
+      const hintShow = state.attempts.l1 >= 1;
+
+      sceneCard.innerHTML = `
+        <div class="scene-title">Level 1 — The Hall of Choosing</div>
+        <div class="scene-text">
+You awaken in a vast obsidian hall.
+Three doors stand before you, etched with ancient runes.
+
+Below them, a stone tablet glows.
+        </div>
+
+        <div class="card" style="background: rgba(255,255,255,0.04); margin-top: 10px;">
+          <div class="scene-text" style="margin:0;">
+<strong>W</strong>hen the world demands you kneel
+<strong>I</strong>n the face of fear and doubt
+<strong>L</strong>egends are not born by chance
+<strong>L</strong>eaving choice to no one else
+          </div>
+        </div>
+
+        <div class="msg">Type the word this hall is testing:</div>
+        <div class="input-row">
+          <input id="l1in" type="text" autocomplete="off" placeholder="Enter one word…" />
+          <button id="l1btn">Bind it</button>
+        </div>
+        <div class="hint ${hintShow ? "show" : ""}" id="l1hint">Hint: Sometimes, the first steps matter most.</div>
+        <div class="msg" id="l1msg"></div>
+
+        <div class="divider"></div>
+        <div class="input-row">
+          <button class="ghost" id="openJournalInline">📖 Journal</button>
+        </div>
+      `;
+
+      document.getElementById("openJournalInline").addEventListener("click", openJournal);
+
+      const input = document.getElementById("l1in");
+      const msg = document.getElementById("l1msg");
+      document.getElementById("l1btn").addEventListener("click", () => {
+        const v = normalize(input.value);
+        if(v === "WILL"){
+          msg.className = "msg ok";
+          msg.textContent = "The door marked Will hums softly. The others fade into shadow.";
+          unlockWord("WILL");
+          state.level = Math.max(state.level, 1);
+          saveState();
+          setTimeout(() => {
+            state.step = "l2";
+            saveState();
+            render();
+          }, 900);
+        }else{
+          state.attempts.l1++;
+          saveState();
+          document.getElementById("l1hint").classList.add("show");
+          msg.className = "msg err";
+          msg.textContent = "The runes remain cold. The hall does not respond.";
+        }
+      });
+    }
+
+    // ----------------------
+    // Level 2: YOU (locked)
+    // ----------------------
+    function renderLevel2(){
+      const hintShow = state.attempts.l2 >= 1;
+
+      sceneCard.innerHTML = `
+        <div class="scene-title">Level 2 — The Mirror of Truth</div>
+        <div class="scene-text">
+You step into a quiet chamber.
+A mirror of moonstone reflects words instead of faces.
+
+“Truth does not need to be proven.”
+        </div>
+
+        <div class="card" style="background: rgba(255,255,255,0.04); margin-top: 10px;">
+          <div class="scene-text" style="margin:0;">
+You are not here by chance.
+You are not unseen.
+
+Every step has led to this moment.
+Every choice has brought <em>you</em> here.
+          </div>
+        </div>
+
+        <div class="msg">The mirror does not reflect faces. It reflects who it speaks to.</div>
+        <div class="input-row">
+          <input id="l2in" type="text" autocomplete="off" placeholder="Enter one word…" />
+          <button id="l2btn">Answer</button>
+        </div>
+        <div class="hint ${hintShow ? "show" : ""}" id="l2hint">Hint: Every line began the same way.</div>
+        <div class="msg" id="l2msg"></div>
+
+        <div class="divider"></div>
+        <div class="input-row">
+          <button class="ghost" id="openJournalInline2">📖 Journal</button>
+        </div>
+      `;
+
+      document.getElementById("openJournalInline2").addEventListener("click", openJournal);
+
+      const input = document.getElementById("l2in");
+      const msg = document.getElementById("l2msg");
+      document.getElementById("l2btn").addEventListener("click", () => {
+        const v = normalize(input.value);
+        if(v === "YOU"){
+          msg.className = "msg ok";
+          msg.textContent = "The mirror brightens. It never asked who you wished to be—only who you already are.";
+          unlockWord("YOU");
+          state.level = Math.max(state.level, 2);
+          saveState();
+          setTimeout(() => {
+            state.step = "l3";
+            saveState();
+            render();
+          }, 900);
+        }else{
+          state.attempts.l2++;
+          saveState();
+          document.getElementById("l2hint").classList.add("show");
+          msg.className = "msg err";
+          msg.textContent = "The mirror remains clear—but silent.";
+        }
+      });
+    }
+
+    // ----------------------
+    // Level 3: BE (choice)
+    // ----------------------
+    function renderLevel3(){
+      sceneCard.innerHTML = `
+        <div class="scene-title">Level 3 — The Crossing</div>
+        <div class="scene-text">
+A bridge lies shattered above endless dark.
+Two stone markers face one another—unmoving.
+
+“Some journeys are not crossed alone.”
+        </div>
+
+        <div class="msg">Choose when you would step forward:</div>
+        <div class="choices">
+          <button class="choice" data-opt="1">1️⃣ When fear is quiet</button>
+          <button class="choice" data-opt="2">2️⃣ When you are unsure, but not alone</button>
+          <button class="choice" data-opt="3">3️⃣ When everything is certain</button>
+        </div>
+        <div class="msg" id="l3msg"></div>
+
+        <div class="divider"></div>
+        <div class="input-row">
+          <button class="ghost" id="openJournalInline3">📖 Journal</button>
+        </div>
+      `;
+
+      document.getElementById("openJournalInline3").addEventListener("click", openJournal);
+
+      const msg = document.getElementById("l3msg");
+      [...sceneCard.querySelectorAll("button.choice")].forEach(btn => {
+        btn.addEventListener("click", () => {
+          const opt = btn.getAttribute("data-opt");
+          if(opt === "2"){
+            msg.className = "msg ok";
+            msg.textContent =
+              "You step forward. Another step echoes beside yours. Stone shifts—light forms—and the bridge rises beneath your feet.";
+            unlockWord("BE");
+            state.level = Math.max(state.level, 3);
+            saveState();
+            setTimeout(() => {
+              state.step = "l4";
+              saveState();
+              render();
+            }, 1100);
+          }else if(opt === "1"){
+            msg.className = "msg err";
+            msg.textContent =
+              "You wait. Fear does not fade. The bridge remains broken.\n“Fear is not the enemy.”";
+          }else{
+            msg.className = "msg err";
+            msg.textContent =
+              "You hesitate. Certainty never arrives. The darkness below does not change.\n“Some things cannot wait.”";
+          }
+        });
+      });
+    }
+
+    // ----------------------
+    // Level 4: MY (elimination)
+    // ----------------------
+    function renderLevel4(){
+      const allWords = ["MINE","FATE","YOURS","MY","OURS"];
+
+      // Ensure removedWords is valid
+      state.removedWords = state.removedWords.filter(w => allWords.includes(w));
+
+      const remaining = allWords.filter(w => !state.removedWords.includes(w));
+      const isDone = remaining.length === 1 && remaining[0] === "MY";
+
+      const blurb = `The chamber is quiet.
+Nothing waits to be taken here.
+
+“Belonging is not claimed.
+It remains only when all else falls away.”`;
+
+      sceneCard.innerHTML = `
+        <div class="scene-title">Level 4 — The Chamber of Belonging</div>
+        <div class="scene-text">${blurb}</div>
+
+        <div class="divider"></div>
+        <div class="msg">Remove the words that do not belong.</div>
+
+        <div class="choices" id="l4choices"></div>
+        <div class="msg" id="l4msg"></div>
+
+        <div class="divider"></div>
+        <div class="input-row">
+          <button class="ghost" id="openJournalInline4">📖 Journal</button>
+          <button class="ghost" id="l4undo" ${state.removedWords.length === 0 || isDone ? "disabled" : ""}>Undo</button>
+          <button id="l4continue" ${isDone ? "" : "disabled"}>Continue</button>
+        </div>
+      `;
+
+      document.getElementById("openJournalInline4").addEventListener("click", openJournal);
+
+      const choices = document.getElementById("l4choices");
+      const msg = document.getElementById("l4msg");
+
+      remaining.forEach(word => {
+        const b = document.createElement("button");
+        b.className = "choice";
+        b.textContent = word;
+        b.addEventListener("click", () => {
+          if(word === "MY" && remaining.length > 1){
+            msg.className = "msg";
+            msg.textContent = "Not yet.";
+            return;
+          }
+
+          // remove word
+          if(word !== "MY"){
+            state.removedWords.push(word);
+            saveState();
+
+            const line = {
+              "FATE": "“Belonging is not decided for you.”",
+              "MINE": "“Nothing here is taken.”",
+              "YOURS": "“This chamber does not demand.”",
+              "OURS": "“Together comes later.”"
+            }[word] || "";
+
+            msg.className = "msg ok";
+            msg.textContent = line ? `${word} fades away.\n${line}` : `${word} fades away.`;
+
+            render(); // re-render to update remaining words
+          }else{
+            // only MY remains
+            msg.className = "msg ok";
+            msg.textContent = "What remains is what was offered.";
+            unlockWord("MY");
+            state.level = Math.max(state.level, 4);
+            saveState();
+            render();
+          }
+        });
+        choices.appendChild(b);
+      });
+
+      document.getElementById("l4undo").addEventListener("click", () => {
+        state.removedWords.pop();
+        saveState();
+        render();
+      });
+
+      document.getElementById("l4continue").addEventListener("click", () => {
+        if(!state.words.find(w => w.key==="MY")?.unlocked) return;
+        state.step = "final";
+        saveState();
+        render();
+      });
+
+      if(isDone && !state.words.find(w => w.key==="MY")?.unlocked){
+        // safety: unlock if somehow not yet
+        unlockWord("MY");
+      }
+    }
+
+    // ----------------------
+    // Final level: VALENTINE?
+    // ----------------------
+    function renderFinalLevel(){
+      // Ensure previous are done
+      if(!allUnlockedBeforeFinal()){
+        state.step = nextStepFromProgress();
+        saveState();
+        return render();
+      }
+
+      if(!state.words.find(w => w.key==="VALENTINE?")?.unlocked){
+        unlockWord("VALENTINE?");
+      }
+
+      sceneCard.innerHTML = `
+        <div class="scene-title">Final — The Journal</div>
+        <div class="scene-text">
+The chamber fades behind you.
+What remains is what you’ve gathered.
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="scene-text" style="margin:0;">
+Open the journal.
+        </div>
+
+        <div class="input-row" style="margin-top:12px;">
+          <button id="openFinalJournal">📖 Open the journal</button>
+        </div>
+
+        <div class="footer-note">
+          The question will be revealed there — quietly, without rushing you.
+        </div>
+      `;
+
+      document.getElementById("openFinalJournal").addEventListener("click", openJournal);
+    }
+
+    // ----------------------
+    // End screen
+    // ----------------------
+    function renderEnd(){
+      sceneCard.innerHTML = `
+        <div class="scene-title">—</div>
+        <div class="scene-text" style="font-size: 16px; color: rgba(255,255,255,0.88);">
+${state.endMessage}
+        </div>
+        <div class="divider"></div>
+        <div class="input-row">
+          <button class="ghost" id="btnJournalEnd">📖 Journal</button>
+          <button id="btnRestartEnd">Restart</button>
+        </div>
+        <div class="footer-note">
+          If you want to change the final message, tell me what line you want and I’ll update the app text.
+        </div>
+      `;
+
+      document.getElementById("btnJournalEnd").addEventListener("click", openJournal);
+      document.getElementById("btnRestartEnd").addEventListener("click", resetState);
+    }
+
+    // ======================
+    // Boot
+    // ======================
+    // Normalize step to appropriate point if user returns mid-run
+    if(state.step === "final" && state.words.find(w=>w.key==="VALENTINE?")?.unlocked){
+      // ok
+    } else if(state.step !== "start"){
+      // Validate step with progress
+      const should = nextStepFromProgress();
+      // if they are behind, push forward; if they are ahead, keep
+      const order = ["start","l1","l2","l3","l4","final","end"];
+      if(order.indexOf(should) > order.indexOf(state.step)){
+        state.step = should;
+        saveState();
+      }
+    }
+
+    render();
+  </script>
+</body>
+</html>
