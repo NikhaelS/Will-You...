@@ -4,141 +4,226 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Wyrdbound Journal</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
   <style>
     :root{
-      --bg: #0b0b10;
+      --bg0:#07070b;
+      --bg1:#0b0b12;
       --panel: rgba(255,255,255,0.06);
-      --panel2: rgba(255,255,255,0.09);
+      --panel2: rgba(255,255,255,0.08);
+      --border: rgba(255,255,255,0.12);
+
       --text: rgba(255,255,255,0.92);
-      --muted: rgba(255,255,255,0.72);
-      --muted2: rgba(255,255,255,0.55);
-      --accent: rgba(255,255,255,0.92);
-      --danger: rgba(255,140,140,0.92);
-      --ok: rgba(170,255,210,0.92);
-      --shadow: 0 12px 40px rgba(0,0,0,0.55);
+      --muted: rgba(255,255,255,0.74);
+      --muted2: rgba(255,255,255,0.54);
+
+      --ok: rgba(165, 255, 210, 0.95);
+      --err: rgba(255, 150, 150, 0.95);
+
       --radius: 18px;
+      --radius2: 24px;
+
+      --shadow: 0 22px 70px rgba(0,0,0,0.65);
+      --shadow2: 0 12px 38px rgba(0,0,0,0.45);
+
+      --serif: "Cormorant Garamond", ui-serif, Georgia, "Times New Roman", serif;
+      --sans: "Inter", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+
+      --ease: cubic-bezier(.2,.9,.2,1);
     }
 
-    * { box-sizing: border-box; }
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
     body{
       margin:0;
-      font-family: ui-serif, Georgia, "Times New Roman", serif;
-      background:
-        radial-gradient(1200px 700px at 20% 15%, rgba(255,255,255,0.08), transparent 55%),
-        radial-gradient(900px 650px at 80% 30%, rgba(255,255,255,0.05), transparent 60%),
-        radial-gradient(700px 600px at 50% 90%, rgba(255,255,255,0.06), transparent 55%),
-        var(--bg);
       color: var(--text);
-      min-height:100vh;
+      background:
+              radial-gradient(1100px 700px at 20% 12%, rgba(255,255,255,0.08), transparent 58%),
+              radial-gradient(900px 700px at 85% 25%, rgba(255,255,255,0.06), transparent 60%),
+              radial-gradient(1000px 700px at 50% 100%, rgba(255,255,255,0.05), transparent 58%),
+              linear-gradient(180deg, var(--bg0), var(--bg1));
       display:flex;
       align-items:center;
       justify-content:center;
       padding: 18px;
+      overflow-x:hidden;
+    }
+    
+    body:before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+      opacity:.18;
+      mix-blend-mode: overlay;
     }
 
     .app{
-      width: min(940px, 100%);
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
-      box-shadow: var(--shadow);
+      width: min(1020px, 100%);
+      border-radius: var(--radius2);
       border: 1px solid rgba(255,255,255,0.10);
+      background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03));
+      box-shadow: var(--shadow);
       overflow:hidden;
+      position:relative;
     }
 
-    header{
+    .topbar{
       display:flex;
-      justify-content:space-between;
       align-items:center;
-      padding: 16px 18px;
-      background: rgba(0,0,0,0.25);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      justify-content:space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.22);
       gap: 12px;
     }
 
-    .title{
+    .brand{
       display:flex;
-      flex-direction:column;
-      gap:2px;
-    }
-    .title h1{
-      margin:0;
-      font-size: 18px;
-      letter-spacing: 0.6px;
-      font-weight: 650;
-    }
-    .title .sub{
-      font-size: 12px;
-      color: var(--muted2);
-      letter-spacing: 0.3px;
+      gap: 12px;
+      align-items:center;
+      min-width: 220px;
     }
 
-    .hdr-actions{
+    .sigil{
+      width: 36px; height: 36px;
+      border-radius: 14px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.18), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+      display:grid;
+      place-items:center;
+      font-family: var(--serif);
+      font-weight:700;
+      letter-spacing: 0.2px;
+    }
+
+    .brand h1{
+      margin:0;
+      font-family: var(--serif);
+      font-size: 18px;
+      letter-spacing: 0.6px;
+      font-weight: 700;
+      line-height: 1.05;
+    }
+    .brand .sub{
+      font-family: var(--sans);
+      font-size: 12px;
+      color: var(--muted2);
+      letter-spacing: 0.2px;
+      margin-top: 2px;
+    }
+
+    .actions{
       display:flex;
-      gap:10px;
+      gap: 10px;
       align-items:center;
       flex-wrap:wrap;
       justify-content:flex-end;
     }
 
-    button, .btn{
-      font-family: inherit;
+    button{
       border: 1px solid rgba(255,255,255,0.16);
       background: rgba(255,255,255,0.06);
       color: var(--text);
       border-radius: 14px;
       padding: 10px 12px;
       cursor:pointer;
-      transition: transform 0.08s ease, background 0.2s ease, border 0.2s ease;
-      user-select:none;
-      text-decoration:none;
+      font-family: var(--sans);
+      font-weight:600;
+      letter-spacing: 0.15px;
+      transition: transform .08s ease, background .18s ease, border .18s ease, box-shadow .18s ease;
       display:inline-flex;
       align-items:center;
-      gap:8px;
+      gap: 8px;
+      user-select:none;
     }
-    button:hover, .btn:hover{ background: rgba(255,255,255,0.10); }
+    button:hover{
+      background: rgba(255,255,255,0.10);
+      border-color: rgba(255,255,255,0.22);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+    }
     button:active{ transform: translateY(1px); }
-    button[disabled]{ opacity:0.45; cursor:not-allowed; }
+    button[disabled]{ opacity:0.45; cursor:not-allowed; box-shadow:none; }
 
-    .ghost{ background: transparent; }
-    .danger{ border-color: rgba(255,140,140,0.35); }
-    .small{ padding: 8px 10px; border-radius: 12px; font-size: 13px; }
-
-    main{
-      display:grid;
-      grid-template-columns: 1fr 320px;
-      gap: 0;
-      min-height: 560px;
+    .btn-ghost{
+      background: transparent;
+      border-color: rgba(255,255,255,0.14);
+    }
+    .btn-danger{
+      border-color: rgba(255,140,140,0.30);
     }
 
-    @media (max-width: 860px){
-      main{ grid-template-columns: 1fr; }
-      .side{ order: -1; }
+    .layout{
+      display:grid;
+      grid-template-columns: 1fr 340px;
+      min-height: 620px;
+    }
+
+    @media (max-width: 920px){
+      .layout{ grid-template-columns: 1fr; }
+      .sidebar{ order:-1; border-left:none; border-bottom: 1px solid rgba(255,255,255,0.10); }
+      .brand{ min-width:auto; }
     }
 
     .stage{
       padding: 18px;
     }
 
-    .card{
+    .sidebar{
+      padding: 18px;
+      border-left: 1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.14);
+    }
+
+    .panel{
       background: var(--panel);
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow2);
       padding: 16px;
     }
 
-    .scene-title{
+    .panel + .panel{ margin-top: 14px; }
+
+    .kicker{
+      font-family: var(--sans);
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      color: var(--muted2);
       margin: 0 0 8px 0;
-      font-size: 16px;
-      letter-spacing: 0.4px;
-      font-weight: 650;
     }
 
-    .scene-text{
-      color: var(--muted);
+    .title{
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0.3px;
+      margin: 0 0 10px 0;
+    }
+
+    .prose{
+      font-family: var(--serif);
+      font-size: 18px;
       line-height: 1.55;
-      font-size: 15px;
-      margin: 10px 0;
+      color: rgba(255,255,255,0.88);
       white-space: pre-line;
+      margin: 10px 0 0;
+    }
+
+    .muted{
+      font-family: var(--sans);
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+      white-space: pre-line;
+      margin: 10px 0 0;
     }
 
     .divider{
@@ -147,35 +232,78 @@
       margin: 14px 0;
     }
 
+    .scene{
+      position:relative;
+    }
+    
+    .scene.fade-in{
+      animation: sceneIn .42s var(--ease) both;
+    }
+    @keyframes sceneIn{
+      from{ opacity:0; transform: translateY(10px); }
+      to{ opacity:1; transform: translateY(0); }
+    }
+
+    .callout{
+      border-radius: var(--radius2);
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.04);
+      padding: 14px;
+      margin-top: 12px;
+    }
+    .callout .prose{
+      font-size: 17px;
+      margin:0;
+      color: rgba(255,255,255,0.86);
+    }
+
     .input-row{
       display:flex;
       gap: 10px;
       flex-wrap:wrap;
       align-items:center;
-      margin-top: 10px;
+      margin-top: 12px;
     }
 
     input[type="text"]{
       flex: 1;
-      min-width: 220px;
-      padding: 11px 12px;
+      min-width: 240px;
+      padding: 12px 12px;
       border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.16);
-      outline:none;
-      background: rgba(0,0,0,0.20);
+      border: 1px solid rgba(255,255,255,0.18);
+      outline: none;
+      background: rgba(0,0,0,0.22);
       color: var(--text);
-      font-family: inherit;
+      font-family: var(--sans);
       font-size: 15px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.25);
+      transition: border .18s ease, background .18s ease, box-shadow .18s ease;
+    }
+    input[type="text"]:focus{
+      border-color: rgba(255,255,255,0.28);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.30), 0 0 0 6px rgba(255,255,255,0.06);
+      background: rgba(0,0,0,0.28);
     }
 
     .msg{
-      margin-top: 10px;
-      color: var(--muted);
+      margin-top: 12px;
+      font-family: var(--sans);
       font-size: 14px;
-      line-height: 1.4;
+      line-height: 1.45;
+      color: var(--muted);
+      white-space: pre-line;
     }
     .msg.ok{ color: var(--ok); }
-    .msg.err{ color: var(--danger); }
+    .msg.err{ color: var(--err); }
+
+    .hint{
+      margin-top: 8px;
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--muted2);
+      display:none;
+    }
+    .hint.show{ display:block; }
 
     .choices{
       display:flex;
@@ -183,789 +311,846 @@
       gap: 10px;
       margin-top: 12px;
     }
+
     .choice{
-      text-align:left;
       width:100%;
       justify-content:flex-start;
       padding: 12px 14px;
+      border-radius: 16px;
       background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.18);
+      text-align:left;
     }
+    .choice:hover{ background: rgba(255,255,255,0.09); }
 
-    .hint{
-      margin-top: 10px;
-      font-size: 13px;
-      color: var(--muted2);
-      display:none;
-    }
-    .hint.show{ display:block; }
-
-    .side{
-      padding: 18px;
-      border-left: 1px solid rgba(255,255,255,0.08);
-      background: rgba(0,0,0,0.12);
-    }
-
-    .journal{
+    
+    .journal-list{
       display:flex;
       flex-direction:column;
       gap: 10px;
+      margin-top: 10px;
     }
 
-    .pill{
+    .word-row{
       display:flex;
-      justify-content:space-between;
       align-items:center;
+      justify-content:space-between;
+      gap: 10px;
       padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px;
       background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .word-row .w{
+      font-family: var(--serif);
+      font-weight: 700;
+      letter-spacing: 0.12em;
       font-size: 14px;
-      letter-spacing: 0.4px;
     }
-    .pill.locked{
-      opacity: 0.55;
-      background: rgba(255,255,255,0.03);
+
+    .word-row.locked .w{
+      letter-spacing: 0.22em;
+      color: rgba(255,255,255,0.58);
     }
-    .pill .tag{
+
+    .badge{
+      font-family: var(--sans);
       font-size: 12px;
       color: var(--muted2);
-      letter-spacing: 0.2px;
     }
 
     .progress{
-      margin-top: 12px;
+      font-family: var(--sans);
       font-size: 13px;
       color: var(--muted2);
-      line-height: 1.35;
+      line-height: 1.45;
+      margin-top: 10px;
+      white-space: pre-line;
     }
 
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      font-family: var(--sans);
+      font-size: 12px;
+      color: var(--muted2);
+      margin-top: 10px;
+    }
+
+    
     .modal{
-      position: fixed;
-      inset: 0;
+      position:fixed;
+      inset:0;
       display:none;
       align-items:center;
       justify-content:center;
       padding: 18px;
-      background: rgba(0,0,0,0.55);
-      backdrop-filter: blur(6px);
+      background: rgba(0,0,0,0.60);
+      backdrop-filter: blur(8px);
       z-index: 50;
     }
     .modal.show{ display:flex; }
-
-    .modal .panel{
-      width: min(760px, 100%);
-      border-radius: var(--radius);
-      background: rgba(15,15,22,0.96);
+    .modal .sheet{
+      width: min(820px, 100%);
+      border-radius: var(--radius2);
+      background: rgba(14,14,22,0.96);
       border: 1px solid rgba(255,255,255,0.14);
       box-shadow: var(--shadow);
       overflow:hidden;
+      animation: sheetIn .28s var(--ease) both;
+    }
+    @keyframes sheetIn{
+      from{ opacity:0; transform: translateY(10px) scale(0.99); }
+      to{ opacity:1; transform: translateY(0) scale(1); }
     }
 
-    .modal .panel header{
-      background: rgba(255,255,255,0.04);
+    .sheet-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding: 14px 16px;
       border-bottom: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.03);
+    }
+    .sheet-title{
+      display:flex;
+      flex-direction:column;
+      gap: 2px;
+    }
+    .sheet-title .h{
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin:0;
+    }
+    .sheet-title .s{
+      font-family: var(--sans);
+      font-size: 12px;
+      color: var(--muted2);
+      margin:0;
+    }
+    .sheet-body{
+      padding: 16px;
     }
 
-    .modal .body{
-      padding: 16px 18px 18px;
-    }
-
-    .journal-big{
+    .bigwords{
       display:grid;
       grid-template-columns: 1fr;
       gap: 10px;
       margin-top: 10px;
     }
-
     .bigword{
-      padding: 14px 14px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.05);
-      font-size: 16px;
-      letter-spacing: 0.9px;
       display:flex;
       justify-content:space-between;
       align-items:center;
+      padding: 14px 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.05);
+    }
+    .bigword .left{
+      font-family: var(--serif);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
     }
     .bigword .state{
+      font-family: var(--sans);
       font-size: 12px;
       color: var(--muted2);
-      letter-spacing: 0.2px;
     }
 
-    .final-options{
+    .final-actions{
+      margin-top: 14px;
       display:flex;
       flex-direction:column;
       gap: 10px;
-      margin-top: 14px;
     }
 
-    .footer-note{
+    .note{
       margin-top: 12px;
-      color: var(--muted2);
+      font-family: var(--sans);
       font-size: 12px;
-      line-height: 1.35;
+      color: var(--muted2);
+      line-height: 1.45;
+      white-space: pre-line;
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      *{ animation:none !important; transition:none !important; }
     }
   </style>
 </head>
 
 <body>
-  <div class="app">
-    <header>
-      <div class="title">
+<div class="app">
+  <div class="topbar">
+    <div class="brand">
+      <div class="sigil">W</div>
+      <div>
         <h1>Wyrdbound Journal</h1>
         <div class="sub">A tale bound by choice, presence, and a question held with care.</div>
       </div>
-      <div class="hdr-actions">
-        <button class="small ghost" id="btnJournal">📖 Journal</button>
-        <button class="small ghost danger" id="btnReset">Reset</button>
-      </div>
-    </header>
+    </div>
 
-    <main>
-      <section class="stage">
-        <div class="card" id="sceneCard"></div>
-      </section>
-
-      <aside class="side">
-        <div class="card">
-          <div class="scene-title">Journal</div>
-          <div class="journal" id="journalMini"></div>
-          <div class="progress" id="progressText"></div>
-        </div>
-      </aside>
-    </main>
-  </div>
-
-  <!-- Journal modal -->
-  <div class="modal" id="journalModal" role="dialog" aria-modal="true" aria-label="Journal">
-    <div class="panel">
-      <header>
-        <div class="title">
-          <h1>Journal</h1>
-          <div class="sub">What you have gathered remains. Quietly. Surely.</div>
-        </div>
-        <div class="hdr-actions">
-          <button class="small ghost" id="btnCloseJournal">Close</button>
-        </div>
-      </header>
-      <div class="body" id="journalBody"></div>
+    <div class="actions">
+      <button class="btn-ghost" id="btnJournal">📖 Journal</button>
+      <button class="btn-ghost btn-danger" id="btnReset">Reset</button>
     </div>
   </div>
 
-  <script>
-    // ======================
-    // State + persistence
-    // ======================
-    const STORAGE_KEY = "wyrdbound_journal_v1";
+  <div class="layout">
+    <div class="stage">
+      <div class="panel scene fade-in" id="scene"></div>
+    </div>
 
-    const WORDS = [
-      { key: "WILL", unlocked: false },
-      { key: "YOU", unlocked: false },
-      { key: "BE", unlocked: false },
-      { key: "MY", unlocked: false },
-      { key: "VALENTINE?", unlocked: false },
-    ];
+    <div class="sidebar">
+      <div class="panel">
+        <div class="kicker">Journal</div>
+        <div class="title">Words Gathered</div>
+        <div class="journal-list" id="journalMini"></div>
+        <div class="progress" id="progressText"></div>
+      </div>
 
-    const defaultState = () => ({
-      step: "start",
-      level: 0, // 0..4 (levels), 5 = final complete
-      attempts: { l1: 0, l2: 0 },
-      removedWords: [], // for level 4
-      finalClosedOnce: false,
-      words: WORDS.map(w => ({...w})),
-      endMessage: "Some answers are not meant for screens.\nI’m waiting for you."
-    });
-
-    let state = loadState();
-
-    function loadState(){
-      try{
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if(!raw) return defaultState();
-        const parsed = JSON.parse(raw);
-        // basic migration safety
-        if(!parsed.words || !Array.isArray(parsed.words)) return defaultState();
-        return { ...defaultState(), ...parsed };
-      }catch{
-        return defaultState();
-      }
-    }
-
-    function saveState(){
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
-
-    function resetState(){
-      state = defaultState();
-      saveState();
-      render();
-    }
-
-    function unlockWord(wordKey){
-      const w = state.words.find(x => x.key === wordKey);
-      if(w) w.unlocked = true;
-      saveState();
-      renderMiniJournal();
-    }
-
-    function allUnlockedBeforeFinal(){
-      return ["WILL","YOU","BE","MY"].every(k => state.words.find(w => w.key===k)?.unlocked);
-    }
-
-    // ======================
-    // UI helpers
-    // ======================
-    const sceneCard = document.getElementById("sceneCard");
-    const journalMini = document.getElementById("journalMini");
-    const progressText = document.getElementById("progressText");
-
-    const journalModal = document.getElementById("journalModal");
-    const journalBody = document.getElementById("journalBody");
-
-    document.getElementById("btnReset").addEventListener("click", () => {
-      if(confirm("Reset progress? This will clear the journal and restart the story.")){
-        resetState();
-      }
-    });
-
-    document.getElementById("btnJournal").addEventListener("click", () => openJournal());
-    document.getElementById("btnCloseJournal").addEventListener("click", () => closeJournal());
-    journalModal.addEventListener("click", (e) => {
-      if(e.target === journalModal) closeJournal();
-    });
-
-    function openJournal(){
-      renderJournalModal();
-      journalModal.classList.add("show");
-    }
-    function closeJournal(){
-      journalModal.classList.remove("show");
-    }
-
-    function renderMiniJournal(){
-      journalMini.innerHTML = "";
-      state.words.forEach(w => {
-        const div = document.createElement("div");
-        div.className = "pill" + (w.unlocked ? "" : " locked");
-        div.innerHTML = `
-          <span>${w.unlocked ? w.key : "••••••"}</span>
-          <span class="tag">${w.unlocked ? "bound" : "locked"}</span>
-        `;
-        journalMini.appendChild(div);
-      });
-
-      const unlockedCount = state.words.filter(w => w.unlocked).length;
-      progressText.textContent =
-        unlockedCount < 4
-          ? `Words gathered: ${unlockedCount}/5.\nYour steps are saved automatically.`
-          : unlockedCount === 4
-            ? `Words gathered: 4/5.\nOne page remains.`
-            : `Words gathered: 5/5.\nThe journal remembers.`;
-    }
-
-    function renderJournalModal(){
-      const unlocked = k => state.words.find(w => w.key === k)?.unlocked;
-
-      const entries = state.words.map(w => {
-        const stateTxt = w.unlocked ? "bound" : "locked";
-        const shown = w.unlocked ? w.key : "••••••";
-        return `<div class="bigword"><span>${shown}</span><span class="state">${stateTxt}</span></div>`;
-      }).join("");
-
-      let extra = "";
-      // Final level overlay only when Valentine? unlocked
-      if(unlocked("VALENTINE?")){
-        extra = `
-          <div class="divider"></div>
-          <div class="scene-text" style="margin:0;">
-            The words are already written.\nOnly one thing remains.
-          </div>
-          <div class="final-options">
-            <button class="choice" id="finalStep">🌸 Step forward</button>
-            <button class="choice" id="finalClose">🌙 Close the journal</button>
-          </div>
-          <div class="footer-note">
-            This story will not force your answer. It only makes space for it.
-          </div>
-        `;
-      }
-
-      journalBody.innerHTML = `
-        <div class="scene-text" style="margin:0;">
-          What you have gathered remains.\nQuietly. Surely.
+      <div class="panel">
+        <div class="kicker">Tip</div>
+        <div class="muted" style="margin:0;">
+          If you ever get stuck, read the text again slowly.
+          The answers are always nearby.
         </div>
-        <div class="journal-big">${entries}</div>
-        ${extra}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" id="modal">
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="Journal">
+    <div class="sheet-header">
+      <div class="sheet-title">
+        <p class="h">Journal</p>
+      </div>
+      <button class="btn-ghost" id="btnClose">Close</button>
+    </div>
+    <div class="sheet-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = "wyrdbound_journal_v2";
+
+  const WORD_KEYS = ["WILL","YOU","BE","MY","VALENTINE?"];
+  const defaultState = () => ({
+    step: "start",
+    attempts: { l1: 0, l2: 0 },
+    removed: [],             
+    words: WORD_KEYS.map(k => ({ key: k, unlocked: false })),
+    endMessage: "Some answers are not meant for screens.\nI’m waiting for you."
+  });
+
+  let state = loadState();
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return defaultState();
+      const parsed = JSON.parse(raw);
+      if(!parsed.words || !Array.isArray(parsed.words)) return defaultState();
+      return { ...defaultState(), ...parsed };
+    }catch{
+      return defaultState();
+    }
+  }
+
+  function saveState(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function resetState(){
+    state = defaultState();
+    saveState();
+    render();
+  }
+
+  function unlock(key){
+    const w = state.words.find(x => x.key === key);
+    if(w) w.unlocked = true;
+    saveState();
+    renderMiniJournal();
+  }
+
+  function has(key){
+    return !!state.words.find(w => w.key===key && w.unlocked);
+  }
+
+  function nextStepFromProgress(){
+    if(!has("WILL")) return "l1";
+    if(!has("YOU")) return "l2";
+    if(!has("BE")) return "l3";
+    if(!has("MY")) return "l4";
+    if(!has("VALENTINE?")) return "final";
+    return "end";
+  }
+
+  function normalize(s){
+    return (s || "").trim().toUpperCase().replace(/\s+/g," ");
+  }
+
+ 
+  const scene = document.getElementById("scene");
+  const journalMini = document.getElementById("journalMini");
+  const progressText = document.getElementById("progressText");
+
+  const modal = document.getElementById("modal");
+  const modalBody = document.getElementById("modalBody");
+
+  document.getElementById("btnReset").addEventListener("click", () => {
+    if(confirm("Reset progress? This will clear the journal and restart the story.")){
+      resetState();
+    }
+  });
+
+  document.getElementById("btnJournal").addEventListener("click", openJournal);
+  document.getElementById("btnClose").addEventListener("click", closeJournal);
+  modal.addEventListener("click", (e) => { if(e.target === modal) closeJournal(); });
+
+  function openJournal(){
+    renderJournalModal();
+    modal.classList.add("show");
+  }
+  function closeJournal(){
+    modal.classList.remove("show");
+  }
+
+  function renderMiniJournal(){
+    journalMini.innerHTML = "";
+    for(const w of state.words){
+      const row = document.createElement("div");
+      row.className = "word-row" + (w.unlocked ? "" : " locked");
+      row.innerHTML = `
+          <div class="w">${w.unlocked ? w.key : "••••••"}</div>
+          <div class="badge">${w.unlocked ? "bound" : "locked"}</div>
+        `;
+      journalMini.appendChild(row);
+    }
+    const unlockedCount = state.words.filter(w => w.unlocked).length;
+    if(unlockedCount < 4){
+      progressText.textContent = `Words gathered: ${unlockedCount}/5.\n`;
+    }else if(unlockedCount === 4){
+      progressText.textContent = `Words gathered: 4/5.\nOne page remains.`;
+    }else{
+      progressText.textContent = `Words gathered: 5/5.\nThe journal remembers.`;
+    }
+  }
+
+  function renderJournalModal(){
+    const entries = state.words.map(w => {
+      const shown = w.unlocked ? w.key : "••••••";
+      const st = w.unlocked ? "bound" : "locked";
+      return `
+          <div class="bigword">
+            <div class="left">${shown}</div>
+            <div class="state">${st}</div>
+          </div>
+        `;
+    }).join("");
+
+    let finalBlock = "";
+    if(has("VALENTINE?")){
+      finalBlock = `
+          <div class="divider"></div>
+          <div class="muted" style="margin:0;">
+The words are already written.\nOnly one thing remains.
+          </div>
+          <div class="final-actions">
+            <button class="choice" id="finalStep">Yes</button>
+            <button class="choice" id="finalClose">No</button>
+          </div>
+          <div class="note">
+This story will not force your answer.
+It only makes space for it.
+          </div>
+        `;
+    }
+
+    modalBody.innerHTML = `
+        <div class="muted" style="margin:0;">
+What you have gathered remains.\nQuietly. Surely.
+        </div>
+        <div class="bigwords">${entries}</div>
+        ${finalBlock}
       `;
 
-      if(unlocked("VALENTINE?")){
-        const finalStep = document.getElementById("finalStep");
-        const finalClose = document.getElementById("finalClose");
+    if(has("VALENTINE?")){
+      const btnStep = document.getElementById("finalStep");
+      const btnClose = document.getElementById("finalClose");
 
-        finalClose.addEventListener("click", () => {
-          state.finalClosedOnce = true;
-          saveState();
-          // gentle reassurance, keep journal open
-          journalBody.insertAdjacentHTML("beforeend", `
+      btnClose.addEventListener("click", () => {
+        
+        modalBody.insertAdjacentHTML("beforeend", `
             <div class="divider"></div>
-            <div class="scene-text" style="margin:0;">
-              Some answers need time.\nThere is no rush.
+            <div class="muted" style="margin:0;">
+Some answers need time.\nThere is no rush.
             </div>
           `);
-          finalClose.disabled = true;
-          setTimeout(() => { renderJournalModal(); }, 700);
-        });
+        btnClose.disabled = true;
+        setTimeout(() => renderJournalModal(), 700);
+      });
 
-        finalStep.addEventListener("click", () => {
-          closeJournal();
-          state.step = "end";
-          saveState();
-          render();
-        });
-      }
+      btnStep.addEventListener("click", () => {
+        closeJournal();
+        state.step = "end";
+        saveState();
+        render();
+      });
+    }
+  }
+
+  function setScene(html){
+   
+    scene.classList.remove("fade-in");
+    scene.innerHTML = html;
+    
+    void scene.offsetWidth;
+    scene.classList.add("fade-in");
+  }
+
+ 
+  function render(){
+    renderMiniJournal();
+
+   
+    const should = nextStepFromProgress();
+    const order = ["start","l1","l2","l3","l4","final","end"];
+    if(order.indexOf(should) > order.indexOf(state.step)){
+      state.step = should;
+      saveState();
     }
 
-    function normalize(s){
-      return (s || "").trim().toUpperCase().replace(/\s+/g, " ");
+    switch(state.step){
+      case "start": return renderStart();
+      case "l1": return renderL1();
+      case "l2": return renderL2();
+      case "l3": return renderL3();
+      case "l4": return renderL4();
+      case "final": return renderFinal();
+      case "end": return renderEnd();
+      default:
+        state.step = "start"; saveState(); return renderStart();
     }
+  }
 
-    // ======================
-    // Scene rendering
-    // ======================
-    function render(){
-      renderMiniJournal();
-
-      switch(state.step){
-        case "start": return renderStart();
-        case "l1": return renderLevel1();
-        case "l2": return renderLevel2();
-        case "l3": return renderLevel3();
-        case "l4": return renderLevel4();
-        case "final": return renderFinalLevel();
-        case "end": return renderEnd();
-        default:
-          state.step = "start"; saveState(); return renderStart();
-      }
-    }
-
-    function renderStart(){
-      sceneCard.innerHTML = `
-        <div class="scene-title">Begin</div>
-        <div class="scene-text">
-A tale bound by choice, presence, and a question held with care.
-
+  function renderStart(){
+    setScene(`
+        <div class="kicker">Begin</div>
+        <div class="title">A quiet journey</div>
+        <div class="muted">
 You will gather five words.
-Your progress saves automatically on this device.
+Each step is saved automatically.
         </div>
+
         <div class="divider"></div>
+
+        <div class="muted" style="margin:0;">
+When you’re ready—
+        </div>
+
         <div class="input-row">
           <button id="btnBegin">▶ Begin</button>
-          <button class="ghost" id="btnResume" ${state.level === 0 && !state.words[0].unlocked ? "disabled" : ""}>Continue</button>
+          <button class="btn-ghost" id="btnContinue" ${nextStepFromProgress()==="l1" ? "disabled" : ""}>Continue</button>
         </div>
-        <div class="footer-note">
-          Tip: use the Journal button anytime. If you ever reset, the story will start anew.
+
+        <div class="note">
         </div>
-      `;
+      `);
 
-      document.getElementById("btnBegin").addEventListener("click", () => {
-        state.step = "l1";
-        state.level = 0;
-        saveState();
-        render();
-      });
+    document.getElementById("btnBegin").addEventListener("click", () => {
+      state.step = "l1"; saveState(); render();
+    });
+    document.getElementById("btnContinue").addEventListener("click", () => {
+      state.step = nextStepFromProgress(); saveState(); render();
+    });
+    document.getElementById("btnOpenJ").addEventListener("click", openJournal);
+  }
 
-      const btnResume = document.getElementById("btnResume");
-      btnResume.addEventListener("click", () => {
-        // resume to next incomplete level
-        const next = nextStepFromProgress();
-        state.step = next;
-        saveState();
-        render();
-      });
-    }
+  // Level 1 — WILL
+  function renderL1(){
+    const showHint = state.attempts.l1 >= 1;
 
-    function nextStepFromProgress(){
-      const has = k => state.words.find(w => w.key===k)?.unlocked;
-      if(!has("WILL")) return "l1";
-      if(!has("YOU")) return "l2";
-      if(!has("BE")) return "l3";
-      if(!has("MY")) return "l4";
-      if(!has("VALENTINE?")) return "final";
-      return "end";
-    }
-
-    // ----------------------
-    // Level 1: WILL
-    // ----------------------
-    function renderLevel1(){
-      const hintShow = state.attempts.l1 >= 1;
-
-      sceneCard.innerHTML = `
-        <div class="scene-title">Level 1 — The Hall of Choosing</div>
-        <div class="scene-text">
+    setScene(`
+        <div class="kicker">Level 1</div>
+        <div class="title">The Hall of Choosing</div>
+        <div class="muted">
 You awaken in a vast obsidian hall.
 Three doors stand before you, etched with ancient runes.
-
 Below them, a stone tablet glows.
         </div>
 
-        <div class="card" style="background: rgba(255,255,255,0.04); margin-top: 10px;">
-          <div class="scene-text" style="margin:0;">
-<strong>W</strong>hen the world demands you kneel
+        <div class="callout">
+          <p class="prose"><strong>W</strong>hen the world demands you kneel
 <strong>I</strong>n the face of fear and doubt
 <strong>L</strong>egends are not born by chance
-<strong>L</strong>eaving choice to no one else
-          </div>
+<strong>L</strong>eaving choice to no one else</p>
         </div>
-
-        <div class="msg">Type the word this hall is testing:</div>
-        <div class="input-row">
-          <input id="l1in" type="text" autocomplete="off" placeholder="Enter one word…" />
-          <button id="l1btn">Bind it</button>
-        </div>
-        <div class="hint ${hintShow ? "show" : ""}" id="l1hint">Hint: Sometimes, the first steps matter most.</div>
-        <div class="msg" id="l1msg"></div>
 
         <div class="divider"></div>
+
+        <div class="muted" style="margin:0;">Type the word this hall is testing:</div>
         <div class="input-row">
-          <button class="ghost" id="openJournalInline">📖 Journal</button>
+          <input id="in" type="text" placeholder="Enter one word…" autocomplete="off" />
+          <button id="go">Answer</button>
         </div>
-      `;
 
-      document.getElementById("openJournalInline").addEventListener("click", openJournal);
+        <div class="hint ${showHint ? "show" : ""}" id="hint">Hint: Sometimes, the first steps matter most.</div>
+        <div class="msg" id="msg"></div>
+      `);
 
-      const input = document.getElementById("l1in");
-      const msg = document.getElementById("l1msg");
-      document.getElementById("l1btn").addEventListener("click", () => {
-        const v = normalize(input.value);
-        if(v === "WILL"){
-          msg.className = "msg ok";
-          msg.textContent = "The door marked Will hums softly. The others fade into shadow.";
-          unlockWord("WILL");
-          state.level = Math.max(state.level, 1);
-          saveState();
-          setTimeout(() => {
-            state.step = "l2";
-            saveState();
-            render();
-          }, 900);
-        }else{
-          state.attempts.l1++;
-          saveState();
-          document.getElementById("l1hint").classList.add("show");
-          msg.className = "msg err";
-          msg.textContent = "The runes remain cold. The hall does not respond.";
-        }
-      });
-    }
+    const jBtn = document.getElementById("j");
+    if (jBtn) jBtn.addEventListener("click", openJournal);
 
-    // ----------------------
-    // Level 2: YOU (locked)
-    // ----------------------
-    function renderLevel2(){
-      const hintShow = state.attempts.l2 >= 1;
+    const input = document.getElementById("in");
+    const msg = document.getElementById("msg");
 
-      sceneCard.innerHTML = `
-        <div class="scene-title">Level 2 — The Mirror of Truth</div>
-        <div class="scene-text">
+    document.getElementById("go").addEventListener("click", () => {
+      if(normalize(input.value) === "WILL"){
+        msg.className = "msg ok";
+        msg.textContent = "The door marked Will hums softly. The others fade into shadow.";
+        unlock("WILL");
+        state.step = "l2"; saveState();
+        setTimeout(render, 5500);
+      }else{
+        state.attempts.l1++;
+        saveState();
+        document.getElementById("hint").classList.add("show");
+        msg.className = "msg err";
+        msg.textContent = "The runes remain cold. The hall does not respond.";
+      }
+    });
+  }
+
+  // Level 2 — YOU
+  function renderL2(){
+    const showHint = state.attempts.l2 >= 1;
+
+    setScene(`
+        <div class="kicker">Level 2</div>
+        <div class="title">The Mirror of Truth</div>
+        <div class="muted">
 You step into a quiet chamber.
 A mirror of moonstone reflects words instead of faces.
 
 “Truth does not need to be proven.”
         </div>
 
-        <div class="card" style="background: rgba(255,255,255,0.04); margin-top: 10px;">
-          <div class="scene-text" style="margin:0;">
-You are not here by chance.
+        <div class="callout">
+          <p class="prose">You are not here by chance.
 You are not unseen.
 
 Every step has led to this moment.
-Every choice has brought <em>you</em> here.
-          </div>
+Every choice has brought <em>you</em> here.</p>
         </div>
-
-        <div class="msg">The mirror does not reflect faces. It reflects who it speaks to.</div>
-        <div class="input-row">
-          <input id="l2in" type="text" autocomplete="off" placeholder="Enter one word…" />
-          <button id="l2btn">Answer</button>
-        </div>
-        <div class="hint ${hintShow ? "show" : ""}" id="l2hint">Hint: Every line began the same way.</div>
-        <div class="msg" id="l2msg"></div>
 
         <div class="divider"></div>
+
+        <div class="muted" style="margin:0;">The mirror reflects who it speaks to:</div>
         <div class="input-row">
-          <button class="ghost" id="openJournalInline2">📖 Journal</button>
+          <input id="in" type="text" placeholder="Enter one word…" autocomplete="off" />
+          <button id="go">Answer</button>
         </div>
-      `;
 
-      document.getElementById("openJournalInline2").addEventListener("click", openJournal);
+        <div class="hint ${showHint ? "show" : ""}" id="hint">Hint: Every line began the same way.</div>
+        <div class="msg" id="msg"></div>
+      `);
 
-      const input = document.getElementById("l2in");
-      const msg = document.getElementById("l2msg");
-      document.getElementById("l2btn").addEventListener("click", () => {
-        const v = normalize(input.value);
-        if(v === "YOU"){
-          msg.className = "msg ok";
-          msg.textContent = "The mirror brightens. It never asked who you wished to be—only who you already are.";
-          unlockWord("YOU");
-          state.level = Math.max(state.level, 2);
-          saveState();
-          setTimeout(() => {
-            state.step = "l3";
-            saveState();
-            render();
-          }, 900);
-        }else{
-          state.attempts.l2++;
-          saveState();
-          document.getElementById("l2hint").classList.add("show");
-          msg.className = "msg err";
-          msg.textContent = "The mirror remains clear—but silent.";
-        }
-      });
-    }
+    const jBtn = document.getElementById("j");
+    if (jBtn) jBtn.addEventListener("click", openJournal);
 
-    // ----------------------
-    // Level 3: BE (choice)
-    // ----------------------
-    function renderLevel3(){
-      sceneCard.innerHTML = `
-        <div class="scene-title">Level 3 — The Crossing</div>
-        <div class="scene-text">
+    const input = document.getElementById("in");
+    const msg = document.getElementById("msg");
+
+    document.getElementById("go").addEventListener("click", () => {
+      if(normalize(input.value) === "YOU"){
+        msg.className = "msg ok";
+        msg.textContent = "The mirror brightens. It never asked who you wished to be, only who you already are.";
+        unlock("YOU");
+        state.step = "l3"; saveState();
+        setTimeout(render, 5500);
+      }else{
+        state.attempts.l2++;
+        saveState();
+        document.getElementById("hint").classList.add("show");
+        msg.className = "msg err";
+        msg.textContent = "The mirror remains clear, but silent.";
+      }
+    });
+  }
+
+  // Level 3 — BE
+  function renderL3(){
+    setScene(`
+        <div class="kicker">Level 3</div>
+        <div class="title">The Crossing</div>
+        <div class="muted">
 A bridge lies shattered above endless dark.
-Two stone markers face one another—unmoving.
+Two stone markers face one another, unmoving.
 
 “Some journeys are not crossed alone.”
         </div>
 
-        <div class="msg">Choose when you would step forward:</div>
+        <div class="divider"></div>
+
+        <div class="muted" style="margin:0;">Choose when you would step forward:</div>
         <div class="choices">
           <button class="choice" data-opt="1">1️⃣ When fear is quiet</button>
           <button class="choice" data-opt="2">2️⃣ When you are unsure, but not alone</button>
           <button class="choice" data-opt="3">3️⃣ When everything is certain</button>
         </div>
-        <div class="msg" id="l3msg"></div>
 
-        <div class="divider"></div>
-        <div class="input-row">
-          <button class="ghost" id="openJournalInline3">📖 Journal</button>
-        </div>
-      `;
+        <div class="msg" id="msg"></div>
+      `);
 
-      document.getElementById("openJournalInline3").addEventListener("click", openJournal);
+    const jBtn = document.getElementById("j");
+    if (jBtn) jBtn.addEventListener("click", openJournal);
 
-      const msg = document.getElementById("l3msg");
-      [...sceneCard.querySelectorAll("button.choice")].forEach(btn => {
-        btn.addEventListener("click", () => {
-          const opt = btn.getAttribute("data-opt");
-          if(opt === "2"){
-            msg.className = "msg ok";
-            msg.textContent =
-              "You step forward. Another step echoes beside yours. Stone shifts—light forms—and the bridge rises beneath your feet.";
-            unlockWord("BE");
-            state.level = Math.max(state.level, 3);
-            saveState();
-            setTimeout(() => {
-              state.step = "l4";
-              saveState();
-              render();
-            }, 1100);
-          }else if(opt === "1"){
-            msg.className = "msg err";
-            msg.textContent =
-              "You wait. Fear does not fade. The bridge remains broken.\n“Fear is not the enemy.”";
-          }else{
-            msg.className = "msg err";
-            msg.textContent =
-              "You hesitate. Certainty never arrives. The darkness below does not change.\n“Some things cannot wait.”";
-          }
-        });
+    const msg = document.getElementById("msg");
+    scene.querySelectorAll("button.choice").forEach(b => {
+      b.addEventListener("click", () => {
+        const opt = b.getAttribute("data-opt");
+        if(opt === "2"){
+          msg.className = "msg ok";
+          msg.textContent = "You step forward. Another step echoes beside yours. Stone shifts, light forms and the bridge rises beneath your feet.";
+          unlock("BE");
+          state.step = "l4"; saveState();
+          setTimeout(render, 5500);
+        }else if(opt === "1"){
+          msg.className = "msg err";
+          msg.textContent = "You wait. Fear does not fade. The bridge remains broken.\n“Fear is not the enemy.”";
+        }else{
+          msg.className = "msg err";
+          msg.textContent = "You hesitate. Certainty never arrives.\n“Some things cannot wait.”";
+        }
       });
-    }
+    });
+  }
 
-    // ----------------------
-    // Level 4: MY (elimination)
-    // ----------------------
-    function renderLevel4(){
-      const allWords = ["MINE","FATE","YOURS","MY","OURS"];
+  // Level 4 — MY
+  function renderL4(){
+    const words = ["MINE","FATE","YOURS","MY","OURS"];
+    state.removed = (state.removed || []).filter(w => words.includes(w));
+    const remaining = words.filter(w => !state.removed.includes(w));
+    const done = (remaining.length === 1 && remaining[0] === "MY");
 
-      // Ensure removedWords is valid
-      state.removedWords = state.removedWords.filter(w => allWords.includes(w));
+    if(done && !has("MY")) unlock("MY");
 
-      const remaining = allWords.filter(w => !state.removedWords.includes(w));
-      const isDone = remaining.length === 1 && remaining[0] === "MY";
+    const listButtons = remaining.map(w => `<button class="choice" data-w="${w}">${w}</button>`).join("");
 
-      const blurb = `The chamber is quiet.
+    setScene(`
+        <div class="kicker">Level 4</div>
+        <div class="title">The Chamber of Belonging</div>
+        <div class="muted">
+The chamber is quiet.
 Nothing waits to be taken here.
 
 “Belonging is not claimed.
-It remains only when all else falls away.”`;
-
-      sceneCard.innerHTML = `
-        <div class="scene-title">Level 4 — The Chamber of Belonging</div>
-        <div class="scene-text">${blurb}</div>
-
-        <div class="divider"></div>
-        <div class="msg">Remove the words that do not belong.</div>
-
-        <div class="choices" id="l4choices"></div>
-        <div class="msg" id="l4msg"></div>
-
-        <div class="divider"></div>
-        <div class="input-row">
-          <button class="ghost" id="openJournalInline4">📖 Journal</button>
-          <button class="ghost" id="l4undo" ${state.removedWords.length === 0 || isDone ? "disabled" : ""}>Undo</button>
-          <button id="l4continue" ${isDone ? "" : "disabled"}>Continue</button>
+It remains only when all else falls away.”
         </div>
-      `;
 
-      document.getElementById("openJournalInline4").addEventListener("click", openJournal);
+        <div class="divider"></div>
 
-      const choices = document.getElementById("l4choices");
-      const msg = document.getElementById("l4msg");
+        <div class="muted" style="margin:0;">Remove the words that do not belong:</div>
+        <div class="choices" id="list">
+          ${listButtons}
+        </div>
 
-      remaining.forEach(word => {
-        const b = document.createElement("button");
-        b.className = "choice";
-        b.textContent = word;
-        b.addEventListener("click", () => {
-          if(word === "MY" && remaining.length > 1){
-            msg.className = "msg";
-            msg.textContent = "Not yet.";
-            return;
-          }
+        <div class="msg" id="msg"></div>
 
-          // remove word
-          if(word !== "MY"){
-            state.removedWords.push(word);
-            saveState();
+        <div class="divider"></div>
 
-            const line = {
-              "FATE": "“Belonging is not decided for you.”",
-              "MINE": "“Nothing here is taken.”",
-              "YOURS": "“This chamber does not demand.”",
-              "OURS": "“Together comes later.”"
-            }[word] || "";
+        <div class="input-row">
+          <button id="continue" ${done ? "" : "disabled"}>Continue</button>
+        </div>
+      `);
 
-            msg.className = "msg ok";
-            msg.textContent = line ? `${word} fades away.\n${line}` : `${word} fades away.`;
+    const jBtn = document.getElementById("j");
+    if (jBtn) jBtn.addEventListener("click", openJournal);
 
-            render(); // re-render to update remaining words
-          }else{
-            // only MY remains
-            msg.className = "msg ok";
-            msg.textContent = "What remains is what was offered.";
-            unlockWord("MY");
-            state.level = Math.max(state.level, 4);
-            saveState();
-            render();
-          }
-        });
-        choices.appendChild(b);
+    const msg = document.getElementById("msg");
+    const mapLine = {
+      "FATE": "“Belonging is not decided for you.”",
+      "MINE": "“Nothing here is taken.”",
+      "YOURS": "“This chamber does not demand.”",
+      "OURS": "“Together comes later.”"
+    };
+
+    document.getElementById("list").querySelectorAll("button.choice").forEach(b => {
+      b.addEventListener("click", () => {
+        const w = b.getAttribute("data-w");
+        if(w === "MY" && remaining.length > 1){
+          msg.className = "msg";
+          msg.textContent = "Not yet.";
+          return;
+        }
+        if(w !== "MY"){
+          state.removed.push(w);
+          saveState();
+          msg.className = "msg ok";
+          msg.textContent = `${w} fades away.\n${mapLine[w] || ""}`.trim();
+          document.querySelectorAll('#list button.choice').forEach(x => x.disabled = true);
+          setTimeout(render, 2700);
+        }else{
+          // Only MY remains
+          unlock("MY");
+          msg.className = "msg ok";
+          msg.textContent = "What remains is what was offered.";
+          document.getElementById("continue").disabled = false;
+        }
       });
+    });
 
-      document.getElementById("l4undo").addEventListener("click", () => {
-        state.removedWords.pop();
-        saveState();
-        render();
-      });
+    document.getElementById("continue").addEventListener("click", () => {
+      state.step = "final";
+      saveState();
+      render();
+    });
+  }
 
-      document.getElementById("l4continue").addEventListener("click", () => {
-        if(!state.words.find(w => w.key==="MY")?.unlocked) return;
-        state.step = "final";
-        saveState();
-        render();
-      });
-
-      if(isDone && !state.words.find(w => w.key==="MY")?.unlocked){
-        // safety: unlock if somehow not yet
-        unlockWord("MY");
-      }
+  // Final level
+  function renderFinal(){
+    if(!has("WILL") || !has("YOU") || !has("BE") || !has("MY")){
+      state.step = nextStepFromProgress();
+      saveState();
+      return render();
     }
 
-    // ----------------------
-    // Final level: VALENTINE?
-    // ----------------------
-    function renderFinalLevel(){
-      // Ensure previous are done
-      if(!allUnlockedBeforeFinal()){
-        state.step = nextStepFromProgress();
-        saveState();
-        return render();
-      }
+    const solved = has("VALENTINE?");
+    const showHint = (state.attemptsFinal || 0) >= 1;
 
-      if(!state.words.find(w => w.key==="VALENTINE?")?.unlocked){
-        unlockWord("VALENTINE?");
-      }
-
-      sceneCard.innerHTML = `
-        <div class="scene-title">Final — The Journal</div>
-        <div class="scene-text">
+    setScene(`
+    <div class="kicker">Final</div>
+    <div class="title">The Journal</div>
+    <div class="muted">
 The chamber fades behind you.
 What remains is what you’ve gathered.
-        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="muted" style="margin:0;">
+The last page is sealed.
+One word remains, meant for a single name.
+    </div>
+
+    <div class="callout">
+      <p class="prose">WILL<br>YOU<br>BE<br>MY<br><em>[ sealed ]</em></p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="muted" style="margin:0;">
+Choose the word that is not claimed… only asked.
+    </div>
+
+    <div class="choices" style="margin-top:12px;">
+      <button class="choice" data-final="OATH">OATH</button>
+      <button class="choice" data-final="FATE">FATE</button>
+      <button class="choice" data-final="MINE">MINE</button>
+      <button class="choice" data-final="VALENTINE?">VALENTINE?</button>
+    </div>
+
+    <div class="hint ${showHint ? "show" : ""}" id="hint">
+Hint: The last word must be a question.
+    </div>
+
+    <div class="msg" id="msg"></div>
+
+    <div class="divider"></div>
+
+    <div class="input-row">
+      <button id="open" ${solved ? "" : "disabled"}>📖 Open the journal</button>
+    </div>
+
+    <div class="note">
+When the seal breaks, the journal will show the full question. If the journal does not open, you can open it with the button above.
+    </div>
+  `);
+
+    const jBtn = document.getElementById("j");
+    if (jBtn) jBtn.addEventListener("click", openJournal);
+
+    const msg = document.getElementById("msg");
+    const openBtn = document.getElementById("open");
+
+    scene.querySelectorAll("button.choice[data-final]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const pick = btn.getAttribute("data-final");
+
+        if(pick === "VALENTINE?"){
+          msg.className = "msg ok";
+          msg.textContent = "The wax seal warms, then softens.\nIt breaks without force.\nThe last word is revealed.";
+          unlock("VALENTINE?");
+          openBtn.disabled = false;
+          setTimeout(openJournal, 5500);
+        }else{
+          state.attemptsFinal = (state.attemptsFinal || 0) + 1;
+          saveState();
+          document.getElementById("hint").classList.add("show");
+          msg.className = "msg err";
+          msg.textContent = "The seal does not yield.\nThis word is taken, this page is only asked.";
+        }
+      });
+    });
+
+    openBtn.addEventListener("click", openJournal);
+  }
+
+
+  // End screen
+  function renderEnd(){
+    setScene(`
+        <div class="kicker">—</div>
+        <div class="title"> </div>
+        <div class="prose" style="margin:0;">${escapeHtml(state.endMessage).replace(/\n/g,"<br>")}</div>
 
         <div class="divider"></div>
 
-        <div class="scene-text" style="margin:0;">
-Open the journal.
-        </div>
-
-        <div class="input-row" style="margin-top:12px;">
-          <button id="openFinalJournal">📖 Open the journal</button>
-        </div>
-
-        <div class="footer-note">
-          The question will be revealed there — quietly, without rushing you.
-        </div>
-      `;
-
-      document.getElementById("openFinalJournal").addEventListener("click", openJournal);
-    }
-
-    // ----------------------
-    // End screen
-    // ----------------------
-    function renderEnd(){
-      sceneCard.innerHTML = `
-        <div class="scene-title">—</div>
-        <div class="scene-text" style="font-size: 16px; color: rgba(255,255,255,0.88);">
-${state.endMessage}
-        </div>
-        <div class="divider"></div>
         <div class="input-row">
-          <button class="ghost" id="btnJournalEnd">📖 Journal</button>
-          <button id="btnRestartEnd">Restart</button>
+          <button class="btn-ghost" id="j">📖 Journal</button>
+          <button id="restart">Restart</button>
         </div>
-        <div class="footer-note">
-          If you want to change the final message, tell me what line you want and I’ll update the app text.
-        </div>
-      `;
+      `);
 
-      document.getElementById("btnJournalEnd").addEventListener("click", openJournal);
-      document.getElementById("btnRestartEnd").addEventListener("click", resetState);
+    document.getElementById("j").addEventListener("click", openJournal);
+    document.getElementById("restart").addEventListener("click", resetState);
+  }
+
+  function escapeHtml(str){
+    return (str || "").replace(/[&<>"']/g, s => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[s]));
+  }
+
+  
+  if(state.step === "final" && has("VALENTINE?")){
+   
+  }else{
+   
+    const should = nextStepFromProgress();
+    const order = ["start","l1","l2","l3","l4","final","end"];
+    if(order.indexOf(should) > order.indexOf(state.step)){
+      state.step = should;
+      saveState();
     }
+  }
 
-    // ======================
-    // Boot
-    // ======================
-    // Normalize step to appropriate point if user returns mid-run
-    if(state.step === "final" && state.words.find(w=>w.key==="VALENTINE?")?.unlocked){
-      // ok
-    } else if(state.step !== "start"){
-      // Validate step with progress
-      const should = nextStepFromProgress();
-      // if they are behind, push forward; if they are ahead, keep
-      const order = ["start","l1","l2","l3","l4","final","end"];
-      if(order.indexOf(should) > order.indexOf(state.step)){
-        state.step = should;
-        saveState();
-      }
-    }
-
-    render();
-  </script>
+  render();
+</script>
 </body>
 </html>
